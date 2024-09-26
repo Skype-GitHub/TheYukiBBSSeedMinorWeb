@@ -169,7 +169,7 @@ import string
 import requests
 urls = os.environ['insurl']
 set = 0
-list(seed)
+seed = []
 def generate_random_string(length=10):
     characters = string.ascii_letters + string.digits  # アルファベットと数字
     return ''.join(random.choice(characters) for _ in range(length))
