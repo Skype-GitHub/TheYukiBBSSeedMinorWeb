@@ -167,7 +167,6 @@ def get_verifycode():
 import random
 import string
 import requests
-import keyboard
 urls = os.environ['insurl']
 set = 0
 list(seed)
