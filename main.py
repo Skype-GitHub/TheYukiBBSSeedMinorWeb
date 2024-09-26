@@ -164,6 +164,36 @@ def get_verifycode():
         print(f"Error: {e}")
         return None
 
+import random
+import string
+import requests
+import keyboard
+urls = os.environ['insurl']
+set = 0
+list(seed)
+def generate_random_string(length=10):
+    characters = string.ascii_letters + string.digits  # アルファベットと数字
+    return ''.join(random.choice(characters) for _ in range(length))
+while True:
+        random_string = generate_random_string()
+        # リクエストを送信し、レスポンスを取得
+        # main=雑談　battle=バトスタ
+        #↓メッセージがシード,送信完了のプリントのナンバーをとset = set + 1を消さないといけない
+        """
+        response = requests.get(
+            fr'{url}bbs/result?channel=battle&message={random_string}&name={random_string}&seed={random_string}',
+            cookies={"yuki": "True"}
+        )
+        """
+        response = requests.get(
+            fr'{urls}bbs/result?channel=battle&message={set}&name=seedsearch&seed={random_string}',
+            cookies={"yuki": "True"}
+        )
+        # ステータスコードを取得
+        status_code = response.status_code
+        print(f"\033[47mシード:\033[41m{random_string}\033[47m ステータスコード:\033[41m{status_code}\033[47m ナンバー:\033[41m{set}\033[0m")
+        seed.append(random_string)
+        set = set + 1
 
 
 
@@ -192,7 +222,10 @@ template = Jinja2Templates(directory='templates').TemplateResponse
 def home(response: Response,request: Request,yuki: Union[str] = Cookie(None)):
     response.set_cookie("yuki","True",max_age=60 * 60 * 24 * 7)
     return template("home.html",{"request": request})
-
+@app.get("/get")
+async def read_item(item_id: int, seed1: str = None):
+    seed2 = seed[seed1]
+    return {"seed": seed1}
 
 
 
