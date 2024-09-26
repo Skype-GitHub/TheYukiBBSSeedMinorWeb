@@ -2,46 +2,45 @@
 <html lang="ja">
 
 <head>
-    <title>連番を簡単に生成！！</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <link rel="stylesheet" href="/css/empty.css">
-    <link rel="stylesheet" href="/css/pure-min.css">
-    <link rel="stylesheet" href="/css/grids-responsive-min.css">
-    <link rel="stylesheet" href="/css/ionicons.min.css">
-    <link rel="stylesheet" href="/css/default.css">
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"/>
-    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <title>YUKIBBSSeed</title>
+    <script>
+        function redirect() {
+            const input = document.getElementById('inputField').value;
+            const url = '/get?seed=' + encodeURIComponent(input);
+            window.location.href = url;
+        }
+    </script>
 </head>
 
-    <body class="no-theme">
-        <div class="pure-g h-box" id="search-widget">
-            <div class="pure-u-1" id="logo">
-                <h1 href="/" class="pure-menu-heading">Yuki Youtube</h1>
-            <a href="/bbs">掲示板</a>
-            </div>
-            <div class="pure-u-1-4"></div>
-            <div class="pure-u-1 pure-u-md-12-24 searchbar">
-                <form class="pure-form" action="/search" method="get">
-                    <fieldset>
-                        <input type="search" id="searchbox" autocomplete="on" autocorrect="on" autocapitalize="none" spellcheck="false" autofocus="" name="q" placeholder="検索" title="検索" value="">
-                    </fieldset>
-                </form>
-            </div>
-            <div class="pure-u-1-4"></div>
-            
-        </div>
-        <script>$('#searchbox').autocomplete({
-            source: function (request, response) {
-                {
-            var url = "/suggest?keyword="+ request.term
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", url);
-            xhr.onload = function() {
-                response(JSON.parse(xhr.responseText));
-            }
-            xhr.send();
-        }},delay:300});</script>
+    <body>
+        <h1>欲しいシードがある場合、その右にある数字を入力してください</h1>
+        <input type="text" id="inputField" placeholder="数字"><button onclick="redirect()">確定</button><br>
+        <div id="messages"></div>
+        <script>
+  function AutoLink(str) {
+  var regexp_url = /((h?)(ttps?:\/\/[a-zA-Z0-9.\-_@:/~?%&;=+#',()*!]+))/g; // ']))/;
+  var regexp_makeLink = function(all, url, h, href) {
+      return '<a href="h' + href + '">' + url + '</a>';
+  }
+
+  return str.replace(regexp_url, regexp_makeLink);
+}
+let element = document.getElementById('filter');
+let channel = document.getElementById('channel')
+function reloadmessages(){
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", "/bbs/api?channel="+channel.value+"&verify="+element.checked+"&t="+Date.now());
+      xhr.onload = function () {
+          if (xhr.status == 200) {
+              document.getElementById('messages').innerHTML = AutoLink(xhr.responseText);
+          }
+      };
+      xhr.send();
+}
+reloadmessages();
+setTimeout(reloadmessages,1000)
+setInterval(reloadmessages,5000);
+</script>
     </body>
 
 </html>
