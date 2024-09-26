@@ -204,7 +204,7 @@ def home(response: Response,request: Request,yuki: Union[str] = Cookie(None)):
 @app.get("/get")
 async def read_item(item_id: int, seed1: str = None):
     seed2 = seed[seed1]
-    return {"seed": seed1}
+    return f"seed: {seed2}"
 @app.get("/none")
 async def read_item(item_id: int, seed1: str = None):
     while True:
