@@ -164,16 +164,50 @@ def get_verifycode():
         print(f"Error: {e}")
         return None
 
+
+
+
+
+
+
+from fastapi import FastAPI, Depends
+from fastapi import Response,Cookie,Request
+from fastapi.responses import HTMLResponse,PlainTextResponse
+from fastapi.responses import RedirectResponse as redirect
+from fastapi.middleware.gzip import GZipMiddleware
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
+from typing import Union
 import random
 import string
 import requests
+
+app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
+app.mount("/css", StaticFiles(directory="./css"), name="static")
+app.mount("/word", StaticFiles(directory="./blog", html=True), name="static")
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 urls = os.environ['insurl']
 set = 0
 seed = []
 def generate_random_string(length=10):
     characters = string.ascii_letters + string.digits  # アルファベットと数字
     return ''.join(random.choice(characters) for _ in range(length))
-while True:
+from fastapi.templating import Jinja2Templates
+template = Jinja2Templates(directory='templates').TemplateResponse
+
+
+
+@app.get("/", response_class=HTMLResponse)
+def home(response: Response,request: Request,yuki: Union[str] = Cookie(None)):
+    response.set_cookie("yuki","True",max_age=60 * 60 * 24 * 7)
+    return template("home.html",{"request": request})
+@app.get("/get")
+async def read_item(item_id: int, seed1: str = None):
+    seed2 = seed[seed1]
+    return {"seed": seed1}
+@app.get("/none")
+async def read_item(item_id: int, seed1: str = None):
+    while True:
         random_string = generate_random_string()
         # リクエストを送信し、レスポンスを取得
         # main=雑談　battle=バトスタ
@@ -193,38 +227,7 @@ while True:
         print(f"\033[47mシード:\033[41m{random_string}\033[47m ステータスコード:\033[41m{status_code}\033[47m ナンバー:\033[41m{set}\033[0m")
         seed.append(random_string)
         set = set + 1
-
-
-
-
-from fastapi import FastAPI, Depends
-from fastapi import Response,Cookie,Request
-from fastapi.responses import HTMLResponse,PlainTextResponse
-from fastapi.responses import RedirectResponse as redirect
-from fastapi.middleware.gzip import GZipMiddleware
-from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
-from typing import Union
-
-
-app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
-app.mount("/css", StaticFiles(directory="./css"), name="static")
-app.mount("/word", StaticFiles(directory="./blog", html=True), name="static")
-app.add_middleware(GZipMiddleware, minimum_size=1000)
-
-from fastapi.templating import Jinja2Templates
-template = Jinja2Templates(directory='templates').TemplateResponse
-
-
-
-@app.get("/", response_class=HTMLResponse)
-def home(response: Response,request: Request,yuki: Union[str] = Cookie(None)):
-    response.set_cookie("yuki","True",max_age=60 * 60 * 24 * 7)
-    return template("home.html",{"request": request})
-@app.get("/get")
-async def read_item(item_id: int, seed1: str = None):
-    seed2 = seed[seed1]
-    return {"seed": seed1}
+    return {"a": "a"}
 
 
 
